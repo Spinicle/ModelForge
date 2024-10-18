@@ -1,0 +1,12 @@
+2024-10-19 05:01:03,059 - INFO - Starting main function
+2024-10-19 05:01:03,059 - INFO - Loading config from examples/modelarch.yaml
+2024-10-19 05:01:03,062 - INFO - Config loaded successfully
+2024-10-19 05:01:03,062 - INFO - Loading config from examples/modelarch.yaml
+2024-10-19 05:01:03,064 - INFO - Config loaded successfully
+2024-10-19 05:01:03,077 - INFO - Loading dataset from datasets/dataset.csv
+2024-10-19 05:01:03,088 - INFO - Dataset loaded successfully
+2024-10-19 05:01:03,088 - INFO - Cleaning data
+2024-10-19 05:01:03,091 - INFO - Data cleaned successfully
+2024-10-19 05:01:03,093 - INFO - Preprocessing dataset
+2024-10-19 05:01:04,384 - INFO - Saving datasets to HDF5 files
+2024-10-19 05:01:04,466 - INFO - Data split successfully

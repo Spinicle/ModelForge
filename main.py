@@ -40,7 +40,7 @@ nltk.download('punkt_tab')
 logging.basicConfig(filename="logs/modelforge.log", filemode='w',level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-handler = logFileNamer.myRotatingFileHandler("logs/", maxBytes=1024000*10, backupCount=1)
+handler = logFileNamer.myRotatingFileHandler("logs/", maxBytes=2000000, backupCount=1)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
