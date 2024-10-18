@@ -32,7 +32,6 @@ class myRotatingFileHandler(BaseRotatingHandler):
                     os.rename(sf, df)
             wkspFldr = os.path.dirname(self.baseFilename)
             df = wkspFldr+'/'+'log-'+ datetime.datetime.now().strftime('%d-%m-%Y-%H-%M-%S') + '.log'
-            print('LOG FILE ---> ',df)
             if os.path.exists(df):
                 os.remove(df)
             if os.path.exists(self.baseFilename):

@@ -26,31 +26,41 @@ from tqdm import tqdm
 
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder, MinMaxScaler
 import logging
+from logging.handlers import RotatingFileHandler
+import logFileNamer
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('punkt_tab')
+
 logging.basicConfig(filename="logs/modelforge.log", filemode='w',level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger()
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler = logFileNamer.myRotatingFileHandler("logs/", maxBytes=1024000*10, backupCount=1)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
 class Loader:
     def __init__(self, config_path):
         self.config = self.load_config(config_path)
         self.data = None
 
     def load_config(self, config_path):
-        logging.info(f"Loading config from {config_path}")
+        logger.info(f"Loading config from {config_path}")
         with open(config_path, 'r') as file:
             config = yaml.safe_load(file)
-        logging.info("Config loaded successfully")
+        logger.info("Config loaded successfully")
         return config
 
     def load_dataset(self):
         dataset_config = self.config['dataset']
-        logging.info(f"Loading dataset from {dataset_config['path']}")
+        logger.info(f"Loading dataset from {dataset_config['path']}")
         self.data = pd.read_csv(dataset_config['path'], delimiter=dataset_config['delimiter'], encoding='utf-8', encoding_errors='ignore')
-        logging.info("Dataset loaded successfully")
+        logger.info("Dataset loaded successfully")
         return self.data
     
 class DataCleaner:
@@ -58,10 +68,10 @@ class DataCleaner:
         self.config = config
 
     def clean_data(self, data):
-        logging.info("Cleaning data")
+        logger.info("Cleaning data")
         data.dropna(inplace=True)
         data.drop_duplicates(inplace=True)
-        logging.info("Data cleaned successfully")
+        logger.info("Data cleaned successfully")
         return data
     
 class TextPreprocessor:
@@ -93,7 +103,7 @@ class TextPreprocessor:
         return tokens
 
     def preprocess_dataset(self, data):
-        logging.info("Preprocessing dataset")
+        logger.info("Preprocessing dataset")
         data['text'] = data['text'].apply(lambda x: self.preprocess_text(x))
         return data
     
@@ -125,11 +135,11 @@ class DataSplitter:
 
         self.save_hdf5()
 
-        logging.info("Data split successfully")
+        logger.info("Data split successfully")
         return self.train_data, self.test_data, self.validation_data
     
     def save_hdf5(self):
-        logging.info("Saving datasets to HDF5 files")
+        logger.info("Saving datasets to HDF5 files")
         self.train_data.to_hdf(f'preprocessed-data/dataset.training.hdf5', key='train', mode='w')
         print("\nWriting preprocessed training set to preprocessed-data/dataset.training.hdf5")
         self.test_data.to_hdf(f'preprocessed-data/dataset.test.hdf5', key='test', mode='w')
@@ -269,7 +279,7 @@ class CategoricalEncoder:
             raise ValueError("encoding_type should be either 'onehot' or 'label'")
         self.encoding_type = encoding_type
         self.encoder = None
-        logging.info(f"categorical encoder initialized")
+        logger.info(f"categorical encoder initialized")
     
     def fit(self, X):
         if self.encoding_type == 'onehot':
@@ -299,7 +309,7 @@ class NumericalEncoder:
     def _init_(self, config):
         self.config = config['preprocessing']['numerical']
         self.scalers = {}
-        logging.info(f"numeric encoder initialized")
+        logger.info(f"numeric encoder initialized")
 
     def fit(self, data):
         for feature in self.config:
@@ -352,7 +362,7 @@ class CategoricalDecoder:
         self.encoding_type = encoding_type
         self.encoder = None
         self.column_names = None
-        logging.info(f"categorical decoder initialized")
+        logger.info(f"categorical decoder initialized")
 
     def fit(self, encoder, column_names):
         self.encoder = encoder
@@ -372,7 +382,7 @@ class NumericalDecoder:
     def _init_(self, config):
         self.config = config['preprocessing']['numerical']
         self.scalers = {}
-        logging.info(f"numerical decoder initialized")
+        logger.info(f"numerical decoder initialized")
 
     def fit(self, scalers):
         self.scalers = scalers
@@ -611,7 +621,7 @@ def main():
     #config_path = 'config.yaml'
     console = Console()
 
-    logging.info("Starting main function")
+    logger.info("Starting main function")
 
     # Load data and config
     loader = Loader(config_path)
